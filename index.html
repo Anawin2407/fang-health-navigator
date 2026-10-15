@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fang Health Navigator</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <div class="brand-icon">✚</div>
+            <div class="brand-text">
+                <h1>Fang Health Navigator</h1>
+                <p>ระบบค้นหาโรงพยาบาลและนำทางในอำเภอฝาง จังหวัดเชียงใหม่</p>
+            </div>
+            <div class="header-badge">
+                <span class="status-dot"></span>
+                ระบบนำทาง
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="welcome-section">
+            <div>
+                <p class="eyebrow">HEALTHCARE LOCATION SYSTEM</p>
+                <h2>ค้นหาเส้นทางสู่บริการสุขภาพ</h2>
+                <p class="welcome-text">
+                    ค้นหาโรงพยาบาล เลือกตำแหน่งต้นทาง และตรวจสอบเส้นทางบนแผนที่
+                </p>
+            </div>
+        </section>
+
+        <section class="stats-grid">
+            <article class="stat-card">
+                <div class="stat-icon">✚</div>
+                <div>
+                    <p>โรงพยาบาลในระบบ</p>
+                    <h3 id="hospitalCount">กำลังโหลด</h3>
+                </div>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-icon">⌖</div>
+                <div>
+                    <p>การกำหนดต้นทาง</p>
+                    <h3>เลือกบนแผนที่</h3>
+                </div>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-icon">➜</div>
+                <div>
+                    <p>ระบบคำนวณเส้นทาง</p>
+                    <h3>พร้อมใช้งาน</h3>
+                </div>
+            </article>
+        </section>
+
+        <div class="workspace">
+            <aside class="sidebar">
+                <section class="panel search-section">
+                    <div class="section-heading">
+                        <span class="heading-icon">⌕</span>
+                        <div>
+                            <h2>ค้นหาโรงพยาบาล</h2>
+                            <p>ค้นหาจากชื่อโรงพยาบาล</p>
+                        </div>
+                    </div>
+
+                    <input type="text" id="searchInput" placeholder="พิมพ์ชื่อโรงพยาบาล...">
+                </section>
+
+                <section class="panel route-section">
+                    <div class="section-heading">
+                        <span class="heading-icon">➤</span>
+                        <div>
+                            <h2>วางแผนการเดินทาง</h2>
+                            <p>เลือกต้นทางและโรงพยาบาลปลายทาง</p>
+                        </div>
+                    </div>
+
+                    <label class="field-label">ต้นทาง</label>
+                    <div class="origin-box">
+                        <span class="origin-dot"></span>
+                        <span id="originStatus">
+                            กรุณาคลิกเลือกตำแหน่งบนแผนที่
+                        </span>
+                    </div>
+
+                    <button type="button" id="clearOrigin" class="button button-secondary">
+                        เลือกต้นทางใหม่
+                    </button>
+
+                    <label for="endHospital" class="field-label">
+                        โรงพยาบาลปลายทาง
+                    </label>
+                    <select id="endHospital">
+                        <option value="">เลือกโรงพยาบาลปลายทาง</option>
+                    </select>
+
+                    <button type="button" id="findRoute" class="button button-primary">
+                        ค้นหาเส้นทาง <span>→</span>
+                    </button>
+
+                    <button type="button" id="findNearest" class="button button-secondary">
+                        🏥 ค้นหาโรงพยาบาลที่ใกล้ที่สุด
+                    </button>
+
+                    <div id="nearestResults" class="route-result">
+                        <p>เลือกตำแหน่งต้นทางบนแผนที่เพื่อค้นหาโรงพยาบาลใกล้ที่สุด</p>
+                    </div>
+
+                    <button type="button" id="clearRoute" class="button button-ghost">
+                        ล้างเส้นทาง
+                    </button>
+
+                    <div id="routeResult" class="route-result">
+                        <p id="routeStatus">
+                            ผลการเดินทางจะแสดงที่นี่
+                        </p>
+                    </div>
+                </section>
+            </aside>
+
+            <section class="panel map-panel map-section">
+                <div class="map-heading">
+                    <div>
+                        <p class="eyebrow">INTERACTIVE MAP</p>
+                        <h2>แผนที่โรงพยาบาลในอำเภอฝาง</h2>
+                        <p>คลิกบนแผนที่เพื่อกำหนดตำแหน่งต้นทาง</p>
+                    </div>
+                    <span class="map-label">Leaflet Map</span>
+                </div>
+
+                <div id="map"></div>
+
+                <div class="map-legend">
+                    <span><i class="legend-dot hospital-legend"></i> โรงพยาบาล</span>
+                    <span><i class="legend-dot origin-legend"></i> ต้นทางที่เลือก</span>
+                    <span><i class="legend-line"></i> เส้นทาง</span>
+                </div>
+            </section>
+        </div>
+
+        <section class="panel hospitals-panel">
+            <div class="section-heading">
+                <span class="heading-icon">✚</span>
+                <div>
+                    <h2>รายชื่อโรงพยาบาล</h2>
+                    <p>ข้อมูลโรงพยาบาลจากฐานข้อมูล</p>
+                </div>
+            </div>
+
+            <p id="status">กำลังโหลดข้อมูล...</p>
+            <div id="hospitalList" class="hospital-list"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>Fang Health Navigator · โครงงานระบบนำทางเพื่อการเข้าถึงบริการสุขภาพ</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
